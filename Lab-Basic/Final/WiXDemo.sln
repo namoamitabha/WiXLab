@@ -1,0 +1,74 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "WiXDemo.LibMsm", "WiXDemo.LibMsm\WiXDemo.LibMsm.wixproj", "{D3BE58F8-BA59-414D-AB07-BF9D22B3C2C1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WiXDemo.Service", "WiXDemo.Service\WiXDemo.Service.csproj", "{52216F9A-C4DB-4529-9E14-D3EEEDD99A20}"
+EndProject
+Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "WiXDemo.Setup", "WiXDemo.Setup\WiXDemo.Setup.wixproj", "{6BE15145-303F-4D4B-9E87-C8B8BA48AD8D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E5625128-BBB8-44E1-A599-27A273A352A8} = {E5625128-BBB8-44E1-A599-27A273A352A8}
+		{E7202262-A5BC-40DC-9056-31046E885C6F} = {E7202262-A5BC-40DC-9056-31046E885C6F}
+		{D3BE58F8-BA59-414D-AB07-BF9D22B3C2C1} = {D3BE58F8-BA59-414D-AB07-BF9D22B3C2C1}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WiXDemo.Test", "WiXDemo.Test\WiXDemo.Test.csproj", "{E7202262-A5BC-40DC-9056-31046E885C6F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Ref", "Ref", "{6CAEAA69-91E2-4A3D-83B3-2007EB5602C2}"
+	ProjectSection(SolutionItems) = preProject
+		Common\SetupGlobal.wxi = Common\SetupGlobal.wxi
+		Common\WiX Demo Exercise Steps.xml = Common\WiX Demo Exercise Steps.xml
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WiXDemo.Lib", "WiXDemo.Lib\WiXDemo.Lib.csproj", "{E5625128-BBB8-44E1-A599-27A273A352A8}"
+EndProject
+Global
+	GlobalSection(SubversionScc) = preSolution
+		Svn-Managed = True
+		Manager = AnkhSVN - Subversion Support for Visual Studio
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D3BE58F8-BA59-414D-AB07-BF9D22B3C2C1}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{D3BE58F8-BA59-414D-AB07-BF9D22B3C2C1}.Debug|x86.ActiveCfg = Debug|x86
+		{D3BE58F8-BA59-414D-AB07-BF9D22B3C2C1}.Debug|x86.Build.0 = Debug|x86
+		{D3BE58F8-BA59-414D-AB07-BF9D22B3C2C1}.Release|Any CPU.ActiveCfg = Release|x86
+		{D3BE58F8-BA59-414D-AB07-BF9D22B3C2C1}.Release|x86.ActiveCfg = Release|x86
+		{D3BE58F8-BA59-414D-AB07-BF9D22B3C2C1}.Release|x86.Build.0 = Release|x86
+		{52216F9A-C4DB-4529-9E14-D3EEEDD99A20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52216F9A-C4DB-4529-9E14-D3EEEDD99A20}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52216F9A-C4DB-4529-9E14-D3EEEDD99A20}.Debug|x86.ActiveCfg = Debug|x86
+		{52216F9A-C4DB-4529-9E14-D3EEEDD99A20}.Debug|x86.Build.0 = Debug|x86
+		{52216F9A-C4DB-4529-9E14-D3EEEDD99A20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52216F9A-C4DB-4529-9E14-D3EEEDD99A20}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52216F9A-C4DB-4529-9E14-D3EEEDD99A20}.Release|x86.ActiveCfg = Release|Any CPU
+		{6BE15145-303F-4D4B-9E87-C8B8BA48AD8D}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{6BE15145-303F-4D4B-9E87-C8B8BA48AD8D}.Debug|x86.ActiveCfg = Debug|x86
+		{6BE15145-303F-4D4B-9E87-C8B8BA48AD8D}.Debug|x86.Build.0 = Debug|x86
+		{6BE15145-303F-4D4B-9E87-C8B8BA48AD8D}.Release|Any CPU.ActiveCfg = Release|x86
+		{6BE15145-303F-4D4B-9E87-C8B8BA48AD8D}.Release|x86.ActiveCfg = Release|x86
+		{6BE15145-303F-4D4B-9E87-C8B8BA48AD8D}.Release|x86.Build.0 = Release|x86
+		{E7202262-A5BC-40DC-9056-31046E885C6F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7202262-A5BC-40DC-9056-31046E885C6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7202262-A5BC-40DC-9056-31046E885C6F}.Debug|x86.ActiveCfg = Debug|x86
+		{E7202262-A5BC-40DC-9056-31046E885C6F}.Debug|x86.Build.0 = Debug|x86
+		{E7202262-A5BC-40DC-9056-31046E885C6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7202262-A5BC-40DC-9056-31046E885C6F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E7202262-A5BC-40DC-9056-31046E885C6F}.Release|x86.ActiveCfg = Release|Any CPU
+		{E5625128-BBB8-44E1-A599-27A273A352A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5625128-BBB8-44E1-A599-27A273A352A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5625128-BBB8-44E1-A599-27A273A352A8}.Debug|x86.ActiveCfg = Debug|x86
+		{E5625128-BBB8-44E1-A599-27A273A352A8}.Debug|x86.Build.0 = Debug|x86
+		{E5625128-BBB8-44E1-A599-27A273A352A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5625128-BBB8-44E1-A599-27A273A352A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E5625128-BBB8-44E1-A599-27A273A352A8}.Release|x86.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

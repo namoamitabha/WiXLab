@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  
+  <Module Id="WiXDemo.LibMsm" Language="1033" Version="1.0.0.0">
+    <Package Id="969c4f67-a47f-42df-a47e-d549eee721b1"
+						 Manufacturer="SLB"
+						 InstallerVersion="200" />
+    
+    <ComponentGroupRef Id="CMPG_WiXDemoLib"/>
+    
+
+  </Module>
+  <?include ..\Common\SetupGlobal.wxi ?>
+  <Fragment>
+    <ComponentGroup Id="CMPG_WiXDemoLib" >
+      <Component Id="CMP_WiXDemoLibDLL" Directory="TARGETDIR"
+                 Guid="{4C289FE2-0211-4D87-8150-33A675B014CF}">
+        <File Id="File_WiXDemoLibDLL"
+              Assembly=".net"
+              Source="$(var.WiXDemo.Lib.TargetDir)IA.WiXDemo.Lib.dll"
+              KeyPath="yes"></File>
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+</Wix>

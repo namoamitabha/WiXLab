@@ -1,0 +1,206 @@
+Step0:
+Empty WiX Setup Project
+
+Step 1:
+Install Readme.txt of service project
+      <Component Id="CMP_ReadMeTXT"
+                 Guid="{CEE814A1-B706-4774-8619-DB61BD465A7A}"
+                 Permanent="no">
+        <File Id="FILE_ReadMeTXT"
+          Source="Readme.txt"
+          KeyPath="yes"/>
+      </Component>
+
+Step 2:
+Add shortcut to readme.txt and uninstall
+
+<DirectoryRef Id="ShortCutDir">
+
+      <Component Id="CMP_ReadMeTXT_ShortCut"
+                 Guid="{111CC002-8EA5-47B1-852E-0E42C2D0A6AD}">
+        <Shortcut Id="ShortCut_ReadMeTXT"
+                  Name="WiX Demo"
+                  Description="InterACT WiX Demo"
+                  Target="[INSTALLFOLDER]Readme.txt"></Shortcut>
+        <Shortcut Id="ShortCut_Uninstall"
+                  Name="Uninstall WiX Demo"
+                  Description="Uninstall InterACT WiX Demo"
+                  Target="[System64Folder]msiexec.exe"
+                  Arguments="/x [ProductCode]">
+        </Shortcut>
+
+        <RemoveFolder Id="RemoveShortCutDir" On="uninstall"/>
+
+        <RegistryValue Root="HKCU"
+                       Key="Software\WiXDemo"
+                       Type="integer"
+                       Value="1"
+                       KeyPath="yes"></RegistryValue>
+      </Component>
+    </DirectoryRef>
+
+
+Step 3:
+Add User Interface: 
+  <UIRef Id="WixUI_Minimal" />
+
+Step 4: 
+Test property with 
+    <Condition
+      Message=" Value of LOGFILE_EXISTENCE is [LOGFILE_EXISTENCE]. Should be not empty">
+      <![CDATA[Installed OR LOGFILE_EXISTENCE <> ""]]>
+    </Condition>    
+
+Step5:
+Create merge module for lib project
+Install dll to GAC
+Project reference
+  <Module Id="WiXDemo.LibMsm" Language="1033" Version="1.0.0.0">
+    <Package Id="969c4f67-a47f-42df-a47e-d549eee721b1"
+						 Manufacturer="SLB"
+						 InstallerVersion="200" />
+    
+    <ComponentGroupRef Id="CMPG_WiXDemoLib"/>
+    
+
+  </Module>
+  <?include ..\Common\SetupGlobal.wxi ?>
+  <Fragment>
+    <ComponentGroup Id="CMPG_WiXDemoLib" >
+      <Component Id="CMP_WiXDemoLibDLL" Directory="TARGETDIR"
+                 Guid="{4C289FE2-0211-4D87-8150-33A675B014CF}">
+        <File Id="File_WiXDemoLibDLL"
+              Assembly=".net"
+              Source="$(var.WiXDemo.Lib.TargetDir)IA.WiXDemo.Lib.dll"
+              KeyPath="yes"></File>
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+
+
+
+Split out Including file
+<?xml version="1.0" encoding="utf-8"?>
+<Include>  
+  <Fragment>
+    <!--<?define SERVICE_PWD = "slb" ?>-->
+    <?define IACommonFilesFolder = "CommonFiles64Folder" ?>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLFOLDER" Name="WiXDemo" />
+      </Directory>
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="ShortCutDir"
+                   Name="WiXDemo">
+        </Directory>
+      </Directory>
+    </Directory>
+  </Fragment>
+</Include>
+
+Add merge moulde reference:
+    <DirectoryRef Id="INSTALLFOLDER" >
+      <Merge Id="WiXDemoLibMsm" SourceFile="..\bin\IA.WiXDemo.Lib.msm" DiskId="1" Language="1033"></Merge>
+    </DirectoryRef>
+
+    
+
+Step6:
+
+Test appsearch with FileSearch
+
+Add lounch condition:
+D:\WiXDemoLog\WiXDemo.log must existing
+    <!-- D:\WiXDemoLog\WiXDemo.log is reqired to install -->
+    <Property
+      Id="LOGFILE_EXISTENCE"
+      Hidden="yes">
+      <DirectorySearch Path="D:\WiXDemoLog"
+                       Depth="0"
+                       AssignToProperty="no"
+                       Id="WiXDemoLogSearch">
+        <FileSearch Name="WiXDemo.log"
+                    Id="WiXDemo_LogFileSearch"
+                    />
+      </DirectorySearch>
+    </Property>
+
+    <Condition
+      Message=" Value of LOGFILE_EXISTENCE is [LOGFILE_EXISTENCE]. Should be not empty">
+      <![CDATA[Installed OR LOGFILE_EXISTENCE <> ""]]>
+    </Condition>
+
+
+
+Step 7:
+Add Registry element
+  <Component Id="CMP_Registry"
+                 Guid="{DA4ED338-8868-4DCC-BD48-910A5A3D3925}"
+                 NeverOverwrite="yes"
+                 Permanent="yes">
+        <RegistryKey Root="HKLM"
+                     Key="Software\WiXDemo"
+                     ForceCreateOnInstall="yes"
+                     ForceDeleteOnUninstall="no">
+          <RegistryValue Name="LogFile"
+                         Action="write"
+                         Value="D:\WiXDemoLog\WiXDemo.log"
+                         Type="string"
+                         KeyPath="yes"/>
+        </RegistryKey>
+      </Component>
+
+Step 8:
+Install Service
+ <Component Id="CMP_WiXDemoService"
+                 Guid="{FC7FBE08-56FC-46DB-9C17-D7C1727DDE0D}">
+        <File Id="FILE_WiXDemoService"
+              KeyPath="yes"
+              Source="$(var.WiXDemo.Service.TargetDir)WiXDemoSvc.exe"/>
+
+        <ServiceInstall Id="WiXDemoSvc"
+                        Name="WiXDemoSvc"
+                        DisplayName="IAWiXDemoService"
+                        Description="IA WiXDemo Service"
+                        Start="auto"
+                        ErrorControl="normal"
+                        Type="ownProcess"
+                        Account=".\WiXDemoUser"
+                        Password="[SERVICE_PWD]">
+          <ServiceDependency Id="W3SVC"/>
+        </ServiceInstall>
+
+        <util:ServiceConfig ServiceName="WiXDemoSvc"
+                              FirstFailureActionType="restart"
+                              SecondFailureActionType="none"
+                              ThirdFailureActionType="none"
+                              RestartServiceDelayInSeconds="10"
+                              />
+
+        <ServiceControl Id="SC_WiXDemoService"
+                          Name="WiXDemoSvc"
+                          Stop="both"
+                          Remove="both"
+                          Wait="yes"/>
+        <!--Throw exceptions when to set start during installation, can find the wixdemo.lib.dll-->
+
+      </Component>
+
+
+Add User
+      <Component Id="CMP_WiXDemoUser"
+                 Guid="{5D6523C6-8147-4A75-936B-098E2F17EFB2}"
+                 KeyPath="yes">
+        <util:User Id="addNewUser"
+                   LogonAsService="yes"
+                   CreateUser="yes"
+                   Name="WiXDemoUser"
+                   UpdateIfExists="yes"
+                   Password="[SERVICE_PWD]"
+                   PasswordNeverExpires="yes"
+                   RemoveOnUninstall="yes"/>
+      </Component>
+
+
+
+

@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
+     xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+  <Product Id="{CEE404A2-D87E-45E5-B025-270DC11C531C}"
+					 Name="InterACT WiXDemo"
+					 Language="1033"
+					 Version="1.0.0.0"
+					 Manufacturer="SLB InterACT"
+					 UpgradeCode="fd65eea4-4b97-4b11-a415-f75676f42660"
+					 Codepage="1252">
+
+    <Package Id="*"
+						 InstallerVersion="200"
+						 Compressed="yes"
+						 InstallScope="perMachine"
+						 ReadOnly="yes"/>
+    <UIRef Id="WixUI_Minimal" />
+    <!-- D:\WiXDemoLog\WiXDemo.log is reqired to install -->
+    <Property
+      Id="LOGFILE_EXISTENCE"
+      Hidden="yes">
+      <DirectorySearch Path="D:\WiXDemoLog"
+                       Depth="0"
+                       AssignToProperty="no"
+                       Id="WiXDemoLogSearch">
+        <FileSearch Name="WiXDemo.log"
+                    Id="WiXDemo_LogFileSearch"
+                    />
+      </DirectorySearch>
+    </Property>
+
+    <Condition
+      Message=" Value of LOGFILE_EXISTENCE is [LOGFILE_EXISTENCE]. Should be not empty">
+      <![CDATA[Installed OR LOGFILE_EXISTENCE <> ""]]>
+    </Condition>
+
+    <!--<Condition 
+      Message="This application is only supported on Windows Vista, Windows Server 2008, or higher.">
+      <![CDATA[Installed OR (VersionNT >= 600)]]>
+    </Condition>-->
+
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <MediaTemplate EmbedCab="yes"/>
+
+    <Feature Id="MainProduct"
+      Title="Main Product"
+      Level="1">
+      <ComponentGroupRef Id="ProductComponents" />
+      <ComponentRef Id="CMP_ReadMeTXT_ShortCut"/>
+      <MergeRef Id="WiXDemoLibMsm" />
+    </Feature>
+  </Product>
+  <?include ..\Common\SetupGlobal.wxi ?>
+
+
+  <Fragment>
+    <Property Id="SERVICE_PWD" Hidden="yes" Value="Password-01"/>
+
+    <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+      <Component Id="CMP_ReadMeTXT"
+                 Guid="{CEE814A1-B706-4774-8619-DB61BD465A7A}"
+                 Permanent="no">
+        <File Id="FILE_ReadMeTXT"
+          Source="Readme.txt"
+          KeyPath="yes"/>
+      </Component>
+
+      <Component Id="CMP_Registry"
+                 Guid="{DA4ED338-8868-4DCC-BD48-910A5A3D3925}"
+                 NeverOverwrite="yes"
+                 Permanent="yes">
+        <RegistryKey Root="HKLM"
+                     Key="Software\WiXDemo"
+                     ForceCreateOnInstall="yes"
+                     ForceDeleteOnUninstall="no">
+          <RegistryValue Name="LogFile"
+                         Action="write"
+                         Value="D:\WiXDemoLog\WiXDemo.log"
+                         Type="string"
+                         KeyPath="yes"/>
+        </RegistryKey>
+      </Component>
+
+      <Component Id="CMP_WiXDemoUser"
+                 Guid="{5D6523C6-8147-4A75-936B-098E2F17EFB2}"
+                 KeyPath="yes">
+        <util:User Id="addNewUser"
+                   LogonAsService="yes"
+                   CreateUser="yes"
+                   Name="WiXDemoUser"
+                   UpdateIfExists="yes"
+                   Password="[SERVICE_PWD]"
+                   PasswordNeverExpires="yes"
+                   RemoveOnUninstall="yes"/>
+      </Component>
+
+      <Component Id="CMP_WiXDemoService"
+                 Guid="{FC7FBE08-56FC-46DB-9C17-D7C1727DDE0D}">
+        <File Id="FILE_WiXDemoService"
+              KeyPath="yes"
+              Source="$(var.WiXDemo.Service.TargetDir)WiXDemoSvc.exe"/>
+
+        <ServiceInstall Id="WiXDemoSvc"
+                        Name="WiXDemoSvc"
+                        DisplayName="IAWiXDemoService"
+                        Description="IA WiXDemo Service"
+                        Start="auto"
+                        ErrorControl="normal"
+                        Type="ownProcess"
+                        Account=".\WiXDemoUser"
+                        Password="[SERVICE_PWD]">
+          <ServiceDependency Id="W3SVC"/>
+        </ServiceInstall>
+
+        <util:ServiceConfig ServiceName="WiXDemoSvc"
+                              FirstFailureActionType="restart"
+                              SecondFailureActionType="none"
+                              ThirdFailureActionType="none"
+                              RestartServiceDelayInSeconds="10"
+                              />
+
+        <ServiceControl Id="SC_WiXDemoService"
+                          Name="WiXDemoSvc"
+                          Stop="both"
+                          Remove="both"
+                          Wait="yes"/>
+        <!--Throw exceptions when to set start during installation, can find the wixdemo.lib.dll-->
+
+      </Component>
+    </ComponentGroup>
+
+    <DirectoryRef Id="INSTALLFOLDER" >
+      <Merge Id="WiXDemoLibMsm" SourceFile="..\bin\IA.WiXDemo.Lib.msm" DiskId="1" Language="1033"></Merge>
+    </DirectoryRef>
+
+    <DirectoryRef Id="ShortCutDir">
+
+      <Component Id="CMP_ReadMeTXT_ShortCut"
+                 Guid="{111CC002-8EA5-47B1-852E-0E42C2D0A6AD}">
+        <Shortcut Id="ShortCut_ReadMeTXT"
+                  Name="WiX Demo"
+                  Description="InterACT WiX Demo"
+                  Target="[INSTALLFOLDER]Readme.txt"></Shortcut>
+        <Shortcut Id="ShortCut_Uninstall"
+                  Name="Uninstall WiX Demo"
+                  Description="Uninstall InterACT WiX Demo"
+                  Target="[System64Folder]msiexec.exe"
+                  Arguments="/x [ProductCode]">
+        </Shortcut>
+
+        <RemoveFolder Id="RemoveShortCutDir" On="uninstall"/>
+
+        <RegistryValue Root="HKCU"
+                       Key="Software\WiXDemo"
+                       Type="integer"
+                       Value="1"
+                       KeyPath="yes"></RegistryValue>
+      </Component>
+    </DirectoryRef>
+  </Fragment>
+</Wix>

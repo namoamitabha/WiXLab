@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="{CEE404A2-D87E-45E5-B025-270DC11C531C}"
+					 Name="InterACT WiXDemo"
+					 Language="1033"
+					 Version="1.0.0.0"
+					 Manufacturer="SLB InterACT"
+					 UpgradeCode="fd65eea4-4b97-4b11-a415-f75676f42660"
+					 Codepage="1252">
+
+    <Package Id="*"
+						 InstallerVersion="200"
+						 Compressed="yes"
+						 InstallScope="perMachine"
+						 ReadOnly="yes"/>
+    <UIRef Id="WixUI_Minimal" />
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <MediaTemplate EmbedCab="yes"/>
+
+    <Feature Id="MainProduct"
+      Title="Main Product"
+      Level="1">
+      <ComponentGroupRef Id="ProductComponents" />
+      <ComponentRef Id="CMP_ReadMeTXT_ShortCut"/>
+    </Feature>
+  </Product>
+
+  <Fragment>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLFOLDER" Name="WiXDemo" />
+      </Directory>
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="ShortCutDir"
+                   Name="WiXDemo">
+
+        </Directory>
+      </Directory>
+    </Directory>
+  </Fragment>
+
+  <Fragment>
+    <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+      <Component Id="CMP_ReadMeTXT"
+                 Guid="{CEE814A1-B706-4774-8619-DB61BD465A7A}"
+                 Permanent="no">
+        <File Id="FILE_ReadMeTXT"
+          src="Readme.txt"
+          KeyPath="yes"/>
+      </Component>
+
+    </ComponentGroup>
+    <DirectoryRef Id="ShortCutDir">
+      <Component Id="CMP_ReadMeTXT_ShortCut"
+                 Guid="{111CC002-8EA5-47B1-852E-0E42C2D0A6AD}">
+        <Shortcut Id="ShortCut_ReadMeTXT"
+                  Name="WiX Demo"
+                  Description="InterACT WiX Demo"
+                  Target="[INSTALLFOLDER]Readme.txt"></Shortcut>
+        <Shortcut Id="ShortCut_Uninstall"
+                  Name="Uninstall WiX Demo"
+                  Description="Uninstall InterACT WiX Demo"
+                  Target="[System64Folder]msiexec.exe"
+                  Arguments="/x [ProductCode]">
+        </Shortcut>
+
+        <RemoveFolder Id="RemoveShortCutDir" On="uninstall"/>
+
+        <RegistryValue Root="HKCU"
+                       Key="Software\WiXDemo"
+                       Type="integer"
+                       Value="1"
+                       KeyPath="yes"></RegistryValue>
+      </Component>
+    </DirectoryRef>
+  </Fragment>
+</Wix>
