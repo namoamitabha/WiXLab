@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
+     xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+  <Product Id="{BAB76EAB-099F-4C16-BA5E-CCF4B9F1BF86}"
+           Name="WixUtilXMLConfig.UninstallChangeTest"
+           Language="1033"
+           Version="1.0.0.0"
+           Manufacturer="StackOverflow"
+           UpgradeCode="1c86fa38-6390-4155-a68a-50beb58bc5b8">
+
+    <Package InstallerVersion="200"
+             Compressed="yes"
+             InstallScope="perMachine" />
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+
+    <MediaTemplate EmbedCab="yes" />
+
+    <Feature Id="ProductFeature"
+             Title="UninstallChangeTest"
+             Level="1">
+      <ComponentGroupRef Id="ProductComponents" />
+    </Feature>
+
+    <InstallExecuteSequence>
+      <Custom Action="SchedXmlConfig"
+              After="InstallFiles"></Custom>
+    </InstallExecuteSequence>
+
+    <UIRef Id="WixUI_Minimal"/>
+  </Product>
+
+  <Fragment>
+    <Directory Id="TARGETDIR"
+               Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLFOLDER"
+                   Name="WixUtilXMLConfig.UninstallChangeTest" />
+      </Directory>
+    </Directory>
+  </Fragment>
+
+  <Fragment>
+    <ComponentGroup Id="ProductComponents"
+                    Directory="INSTALLFOLDER">
+      <Component Id="CMP_ConfigFile"
+                 Guid="{24D22D04-1A98-40D1-83EC-87E68A87A07C}"
+                 Permanent="yes"
+                 KeyPath="yes"
+                 NeverOverwrite="yes">
+        <File Id="ConfigFile"
+              src="administration.config"></File>
+      </Component>
+      <Component Id="CMP_XMLConfigInstallChange"
+                 Guid="{B1B3B46A-0606-44F4-AEB6-58C5019F5C82}"
+                 KeyPath="yes">
+        <util:XmlConfig Id="Add_ElementTest"
+                        File="[#ConfigFile]"
+                        ElementPath="/configuration/configSections"
+                        Action="create"
+                        Name="section"
+                        Node="element"
+                        On="install"
+                        Sequence="5000">
+          <util:XmlConfig Id="Name_Test"
+                          File="[#ConfigFile]"
+                          ElementId="Add_ElementTest"
+                          Name="name"
+                          Value="TEST"></util:XmlConfig>
+        </util:XmlConfig>
+
+      </Component>
+
+      <Component Id="CMP_XMLConfig_UninstallChange"
+                 Guid="{E1A01B17-247E-4717-8DC0-A923A8E90BE4}"
+                 KeyPath="yes">
+        <util:XmlConfig Id="Remove_ElementTest"
+                        File="[#ConfigFile]"
+                        ElementPath="/configuration/configSections"
+                        VerifyPath="/configuration/configSections/section[\[]@name='TEST'[\]]"
+                        Action="delete"
+                        Node="element"
+                        On="uninstall"
+                        Sequence="5000">
+        </util:XmlConfig>
+
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+</Wix>
